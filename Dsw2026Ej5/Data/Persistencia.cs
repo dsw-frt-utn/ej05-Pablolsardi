@@ -48,10 +48,24 @@ public class Persistencia
     {
         return Vehiculos;
     }
+    public static List<Sucursal> GetSucursales()
+    {
+        return Sucursales;
+    }
+
+    public static Sucursal? GetSucursalPorCodigo(string codigo)
+    {
+        return Sucursales.Find(s => s.GetCodigo() == codigo);
+    }
 
     public static Vehiculo? GetVehiculo(string patente)
     {
         return Vehiculos.Find(v => v.GetPatente() == patente);
+    }
+
+    public static void AgregarVehiculo(Vehiculo vehiculo)
+    {
+        Vehiculos.Add(vehiculo);
     }
 
     public static void InicializarDatos()
