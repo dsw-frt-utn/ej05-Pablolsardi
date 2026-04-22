@@ -1,4 +1,7 @@
-﻿namespace Dsw2026Ej5.Views;
+﻿using Dsw2026Ej5.Data;
+using Dsw2026Ej5.Domain;
+
+namespace Dsw2026Ej5.Views;
 
 public class ConsoleView
 {
@@ -27,6 +30,7 @@ public class ConsoleView
             else if (opcion == "2")
             {
                 Console.WriteLine("Agregando vehículo...");
+                AgregarVehiculo();
             }
         }
         while (opcion != "3");
@@ -88,6 +92,81 @@ public class ConsoleView
         Console.WriteLine("Presione una tecla para salir...");
         Console.ReadLine();
     }
+
+    private static void AgregarVehiculo()
+    {
+        Console.WriteLine("Ingrese código de sucursal (p. ej. SUC01): ");
+        string codigoSucursal = Console.ReadLine()?.Trim() ?? "";
+        Sucursal? sucursal = Persistencia.GetSucursalPorCodigo(codigoSucursal);
+        if (sucursal == null)
+        {
+            Console.WriteLine("Sucursal no encontrada. Usando primera sucursal disponible.");
+            sucursal = Persistencia.GetVehiculos().FirstOrDefault()?.GetSucursal() ?? throw new Exception("No hay sucursales");
+        }
+
+        Console.Write("Patente: ");
+        string patente = Console.ReadLine()?.Trim() ?? "";
+
+        Console.Write("Marca: ");
+        string marca = Console.ReadLine()?.Trim() ?? "";
+
+        Console.Write("Modelo: ");
+        string modelo = Console.ReadLine()?.Trim() ?? "";
+
+        Console.Write("Año: ");
+        int anio;
+        while (!int.TryParse(Console.ReadLine(), out anio))
+        {
+            Console.Write("Valor inválido. Ingrese el año: ");
+        }
+
+        Console.Write("Capacidad de carga: ");
+        double capacidad;
+        while (!double.TryParse(Console.ReadLine(), out capacidad))
+        {
+            Console.Write("Valor inválido. Ingrese la capacidad: ");
+        }
+
+        Console.Write("Tipo (1 = Eléctrico, 2 = Combustible): ");
+        string tipo = Console.ReadLine()?.Trim() ?? "";
+
+
+        Vehiculo nuevo;
+        if (tipo == "1")
+        {
+            Console.Write("kWh base (por cada 100 km): ");
+            double kwh;
+            while (!double.TryParse(Console.ReadLine(), out kwh))
+            {
+                Console.Write("Valor inválido. Ingrese kWh base: ");
+            }
+            nuevo = new VehiculoElectrico(patente, marca, modelo, anio, capacidad, sucursal, kwh);
+        }
+        else
+        {
+            Console.Write("Km por litro: ");
+            double kmPorLitro;
+            while (!double.TryParse(Console.ReadLine(), out kmPorLitro))
+            {
+                Console.Write("Valor inválido. Ingrese Km/l: ");
+            }
+            Console.Write("Litros extra (factor): ");
+            double litrosExtra;
+            while (!double.TryParse(Console.ReadLine(), out litrosExtra))
+            {
+                Console.Write("Valor inválido. Ingrese litros extra: ");
+            }
+            nuevo = new VehiculoCombustible(patente, marca, modelo, anio, capacidad, sucursal, kmPorLitro, litrosExtra);
+        }
+
+        Persistencia.AgregarVehiculo(nuevo);
+        _vehiculos = Controlador.GetVehiculos();
+
+        Console.WriteLine("Vehículo agregado. Presione una tecla para continuar...");
+        Console.ReadKey();
+    }
+
+
     private static void DibujarEncabezado(params string[] columnas)
     {
         DibujarLinea();
