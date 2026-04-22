@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 
 namespace Dsw2026Ej5.Domain;
@@ -28,6 +29,13 @@ public class VehiculoCombustible: Vehiculo
 
     public override double CalcularConsumo(double kilometros)
     {
-        return kilometros * kilometrosPorLitro;
+        double total = 1.0 / kilometrosPorLitro * kilometros;
+
+        if ((DateTime.Now.Year - GetAnio()) >= 5)
+        {
+            total = total + ((kilometros / 15) * litrosExtra);
+        }
+        total = Math.Round(total, 2);
+        return total;
     }
 }
