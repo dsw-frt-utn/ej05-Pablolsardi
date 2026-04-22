@@ -21,6 +21,13 @@ public class VehiculoElectrico : Vehiculo
 
     public override double CalcularConsumo(double kilometros)
     {
-        return kilometros * kwhBase;
+        float total = (kwhBase / 100) * kilometros;
+
+        if (GetCapacidadCarga() > 1200)
+        {
+            total = total * 1.15;
+        }
+
+        return total;
     }
 }
